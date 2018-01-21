@@ -38,6 +38,8 @@ namespace Orbital
 			{
 				this.Launch(l, direction, forceAmount);
 			}
+
+			Orbital.CameraSwitcher.Instance.LoadPlanetView();
 		}
 
 		void Start () 
@@ -56,9 +58,9 @@ namespace Orbital
 
 		void OnGUI() 
 		{
-			GUILayout.BeginArea(new Rect(10, 10, 200, 200));
+			GUILayout.BeginArea(new Rect(25, 10, 225, 200));
 
-			this.ForceAmount = GUILayout.HorizontalSlider(this.ForceAmount, 1.0F, 1000.0F);
+			this.ForceAmount = GUILayout.HorizontalSlider(this.ForceAmount, 500.0F, 700.0F);
 			GUILayout.Box("ForceAmount: " + this.ForceAmount);
 
 			this.ForceAngle = GUILayout.HorizontalSlider(this.ForceAngle, 0.0f, 45.0f);
@@ -66,7 +68,7 @@ namespace Orbital
 
 			if (GUILayout.Button("Launch"))
 			{
-				Vector3 launchDir = Vector3.RotateTowards(Vector3.right, Vector3.up, this.ForceAngle*0.0174533f, 1);
+				Vector3 launchDir = Vector3.RotateTowards(this.transform.right, this.transform.up, this.ForceAngle*Mathf.Deg2Rad, 1);
 
 				this.LaunchNext(launchDir, this.ForceAmount);
 			}
