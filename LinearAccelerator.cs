@@ -9,10 +9,13 @@ namespace Orbital
 	{
 		public bool DoLaunch = false;
 		public float ForceAmount = 600.0f;
+		public float BoostAmount = 50.0f;
 		public float ForceAngle = 0.0f;
 		public float ForceRotation = 0.0f;
 
 		public GameObject [] LaunchableObjects;
+
+		public GameObject LastLaunched = null;
 
 		public void Launch(GameObject launchable)
 		{
@@ -21,6 +24,7 @@ namespace Orbital
 			{
 				launchable.SetActive(true);
 				rb.isKinematic = false;
+				this.LastLaunched = launchable;
 			}
 		}
 
@@ -45,6 +49,17 @@ namespace Orbital
 			Orbital.CameraSwitcher.Instance.LoadPlanetView();
 		}
 
+		public void Boost(GameObject go)
+		{
+			Rigidbody rb = go.GetComponent<Rigidbody>();
+			if (rb != null)
+			{
+				Vector3 force = this.BoostAmount * rb.velocity.normalized;
+				rb.isKinematic = false;
+				rb.AddForce(force, ForceMode.Force);
+				Debug.Log("Boost applying force");
+			}
+		}
 
 		void OnTriggerStay(Collider other)
     	{
@@ -80,23 +95,33 @@ namespace Orbital
 
 		void OnGUI() 
 		{
-			GUILayout.BeginArea(new Rect(25, 10, 225, 200));
+			GUILayout.BeginArea(new Rect(25, 10, 225, 500));
 
-			this.ForceAmount = GUILayout.HorizontalSlider(this.ForceAmount, 50.0F, 200.0F);
+			this.ForceAmount = GUILayout.HorizontalSlider(this.ForceAmount, 80.0F, 200.0F);
 			GUILayout.Box("ForceAmount: " + this.ForceAmount);
 
-			this.ForceAngle = GUILayout.HorizontalSlider(this.ForceAngle, 0.0f, 45.0f);
+			this.ForceAngle = GUILayout.HorizontalSlider(this.ForceAngle, 0.0f, 15.0f);
 			GUILayout.Box("ForceAngle: " + this.ForceAngle);
 
 			//this.ForceRotation = GUILayout.HorizontalSlider(this.ForceRotation, 0.0f, 45.0f);
 			//GUILayout.Box("ForceRotation: " + this.ForceRotation);
 
-			if (GUILayout.Button("Launch"))
+			GUILayout.EndArea();
+
+			int buttonSize = 100;
+			int padding = 20;
+			if (GUI.Button(new Rect(padding, Screen.height-(buttonSize + padding), buttonSize, buttonSize), "Launch"))
 			{
 				this.LaunchNext();
 			}
 
-			GUILayout.EndArea();
+			if (this.LastLaunched != null)
+			{
+				if (GUI.Button(new Rect(Screen.width-(buttonSize + padding), Screen.height-(buttonSize + padding), buttonSize, buttonSize), "Boost"))
+				{
+					this.Boost(this.LastLaunched);
+				}
+			}
 		}
 	}
 }
