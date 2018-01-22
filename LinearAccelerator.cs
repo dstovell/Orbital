@@ -111,7 +111,7 @@ namespace Orbital
 			Vector2 launchStick = UltimateJoystick.GetPosition("LaunchStick");
 			if (launchStick.magnitude > 0)
 			{
-				this.ForceAmount = Mathf.Lerp(80, 150, launchStick.magnitude);
+				this.ForceAmount = Mathf.Lerp(80, 120, launchStick.magnitude);
 			}
 
 			if ((launchStick.x > 0) && (launchStick.y > 0))
