@@ -60,10 +60,10 @@ namespace Orbital
 		{
 			GUILayout.BeginArea(new Rect(25, 10, 225, 200));
 
-			this.ForceAmount = GUILayout.HorizontalSlider(this.ForceAmount, 500.0F, 700.0F);
+			//this.ForceAmount = GUILayout.HorizontalSlider(this.ForceAmount, 500.0F, 700.0F);
 			GUILayout.Box("ForceAmount: " + this.ForceAmount);
 
-			this.ForceAngle = GUILayout.HorizontalSlider(this.ForceAngle, 0.0f, 45.0f);
+			//this.ForceAngle = GUILayout.HorizontalSlider(this.ForceAngle, 0.0f, 45.0f);
 			GUILayout.Box("ForceAngle: " + this.ForceAngle);
 
 			if (GUILayout.Button("Launch"))

@@ -91,37 +91,53 @@ namespace Orbital
 			//Vector3 baseAngles = this.transform.parent.localRotation.eulerAngles;
 			//baseAngles.y = this.ForceRotation;
 			//this.transform.parent.localRotation = Quaternion.Euler(baseAngles);
+
+			if (UltimateButton.GetButtonDown("LaunchButton"))
+			{
+				if (this.LastLaunched != null)
+				{
+					this.Boost(this.LastLaunched);
+					this.LastLaunched = null;
+				}
+				else 
+				{
+					this.LaunchNext();
+				}
+			}
+		}
+
+		void FixedUpdate()
+		{
+			Vector2 launchStick = UltimateJoystick.GetPosition("LaunchStick");
+			if (launchStick.magnitude > 0)
+			{
+				this.ForceAmount = Mathf.Lerp(80, 150, launchStick.magnitude);
+			}
+
+			if ((launchStick.x > 0) && (launchStick.y > 0))
+			{
+				this.ForceAngle = Vector2.Angle(launchStick, Vector2.right);
+				this.ForceAngle = Mathf.Clamp(this.ForceAngle, 0.0f, 45.0f);
+			}
+			else if ((launchStick.x < 0) && (launchStick.y < 0))
+			{
+				this.ForceAngle = Vector2.Angle(launchStick, Vector2.left);
+				this.ForceAngle = Mathf.Clamp(this.ForceAngle, 0.0f, 45.0f);
+			}
 		}
 
 		void OnGUI() 
 		{
-			GUILayout.BeginArea(new Rect(25, 10, 225, 500));
+			int left = (int)((float)Screen.width * 0.4f);
 
-			this.ForceAmount = GUILayout.HorizontalSlider(this.ForceAmount, 80.0F, 200.0F);
+			GUILayout.BeginArea(new Rect(left, 10, 300, 200));
+
+			GUILayout.BeginHorizontal();
 			GUILayout.Box("ForceAmount: " + this.ForceAmount);
-
-			this.ForceAngle = GUILayout.HorizontalSlider(this.ForceAngle, 0.0f, 15.0f);
 			GUILayout.Box("ForceAngle: " + this.ForceAngle);
-
-			//this.ForceRotation = GUILayout.HorizontalSlider(this.ForceRotation, 0.0f, 45.0f);
-			//GUILayout.Box("ForceRotation: " + this.ForceRotation);
+			GUILayout.EndHorizontal();
 
 			GUILayout.EndArea();
-
-			int buttonSize = 100;
-			int padding = 20;
-			if (GUI.Button(new Rect(padding, Screen.height-(buttonSize + padding), buttonSize, buttonSize), "Launch"))
-			{
-				this.LaunchNext();
-			}
-
-			if (this.LastLaunched != null)
-			{
-				if (GUI.Button(new Rect(Screen.width-(buttonSize + padding), Screen.height-(buttonSize + padding), buttonSize, buttonSize), "Boost"))
-				{
-					this.Boost(this.LastLaunched);
-				}
-			}
 		}
 	}
 }
