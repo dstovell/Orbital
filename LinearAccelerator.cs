@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Vectrosity;
 
 namespace Orbital
 {
@@ -13,9 +14,19 @@ namespace Orbital
 		public float ForceAngle = 0.0f;
 		public float ForceRotation = 0.0f;
 
+		public float ForceAmountMin = 80.0f;
+		public float ForceAmountMax = 120.0f;
+
+		public float ForceAngleMin = 0.0f;
+		public float ForceAngleMax = 45.0f;
+
+		public LaunchPath PathRenderer;
+
 		public GameObject [] LaunchableObjects;
 
 		public GameObject LastLaunched = null;
+
+		public GameObject LaunchPoint;
 
 		public void Launch(GameObject launchable)
 		{
@@ -58,6 +69,15 @@ namespace Orbital
 				rb.isKinematic = false;
 				rb.AddForce(force, ForceMode.Force);
 				Debug.Log("Boost applying force");
+			}
+		}
+
+		void Start()
+		{
+			if (this.PathRenderer != null)
+			{
+				this.PathRenderer.ForceAmountMin = this.ForceAmountMin;
+				this.PathRenderer.ForceAmountMax = this.ForceAmountMax;
 			}
 		}
 
@@ -104,6 +124,13 @@ namespace Orbital
 					this.LaunchNext();
 				}
 			}
+
+			if (this.PathRenderer != null)
+			{
+				this.PathRenderer.ForceAmount = this.ForceAmount;
+				this.PathRenderer.LineStart = (this.LaunchPoint != null) ? this.LaunchPoint.transform.position : this.transform.position;
+				this.PathRenderer.LineDirection = this.transform.forward;
+			}
 		}
 
 		void FixedUpdate()
@@ -111,18 +138,33 @@ namespace Orbital
 			Vector2 launchStick = UltimateJoystick.GetPosition("LaunchStick");
 			if (launchStick.magnitude > 0)
 			{
-				this.ForceAmount = Mathf.Lerp(80, 120, launchStick.magnitude);
+				this.ForceAmount = Mathf.Lerp(this.ForceAmountMin, this.ForceAmountMax, launchStick.magnitude);
 			}
 
 			if ((launchStick.x > 0) && (launchStick.y > 0))
 			{
+				if (this.PathRenderer != null)
+				{
+					this.PathRenderer.Enable();
+				}
 				this.ForceAngle = Vector2.Angle(launchStick, Vector2.right);
-				this.ForceAngle = Mathf.Clamp(this.ForceAngle, 0.0f, 45.0f);
+				this.ForceAngle = Mathf.Clamp(this.ForceAngle, this.ForceAngleMin, this.ForceAngleMax);
 			}
 			else if ((launchStick.x < 0) && (launchStick.y < 0))
 			{
+				if (this.PathRenderer != null)
+				{
+					this.PathRenderer.Enable();
+				}
 				this.ForceAngle = Vector2.Angle(launchStick, Vector2.left);
 				this.ForceAngle = Mathf.Clamp(this.ForceAngle, 0.0f, 45.0f);
+			}
+			else if ((launchStick.x == 0) && (launchStick.y == 0))
+			{
+				if (this.PathRenderer != null)
+				{
+					this.PathRenderer.Disable();
+				}
 			}
 		}
 

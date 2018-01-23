@@ -18,7 +18,7 @@ namespace Orbital
 
 		void Start () 
 		{
-			this.LoadLauncherView();
+			this.LoadPlanetView();
 		}
 
 		public void LoadPlanetView()
