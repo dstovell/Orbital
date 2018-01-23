@@ -105,36 +105,40 @@ namespace Orbital
     	private void EnableButton(string name)
     	{
 			UltimateButton b = UltimateButton.GetUltimateButton(name);
-			if ((b != null) && !b.isActiveAndEnabled)
+			if (b != null)
 			{
-				b.gameObject.SetActive(true);
+				CanvasGroup cg = b.GetComponent<CanvasGroup>();
+				cg.alpha = 1.0f;
 			}
     	}
 
 		private void DisableButton(string name)
     	{
 			UltimateButton b = UltimateButton.GetUltimateButton(name);
-			if ((b != null) && b.isActiveAndEnabled)
+			if (b != null)
 			{
-				b.gameObject.SetActive(false);
+				CanvasGroup cg = b.GetComponent<CanvasGroup>();
+				cg.alpha = 0.0f;
 			}
     	}
 
 		private void EnableStick(string name)
     	{
 			UltimateJoystick s = UltimateJoystick.GetJoystick(name);
-			if ((s != null) && !s.isActiveAndEnabled)
+			if (s != null)
 			{
-				s.gameObject.SetActive(true);
+				CanvasGroup cg = s.GetComponent<CanvasGroup>();
+				cg.alpha = 1.0f;
 			}
     	}
 
 		private void DisableStick(string name)
     	{
 			UltimateJoystick s = UltimateJoystick.GetJoystick(name);
-			if ((s != null) && s.isActiveAndEnabled)
+			if (s != null)
 			{
-				s.gameObject.SetActive(false);
+				CanvasGroup cg = s.GetComponent<CanvasGroup>();
+				cg.alpha = 0.0f;
 			}
     	}
 
