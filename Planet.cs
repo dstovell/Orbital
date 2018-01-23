@@ -13,15 +13,12 @@ namespace Orbital
 		[Tooltip ("Texture with water mask data. The alpha channel determines the location of water (values < constant threshold)")]
 		public Texture2D waterMask;
 
-
 		public float rotationSpeed = 1.0f;
 
 		private HexasphereGrid.Hexasphere hexa;
-		private SphereCollider collider;
 
 		void Start () 
 		{
-			this.collider = this.GetComponent<SphereCollider>();
 			this.hexa = this.GetComponent<HexasphereGrid.Hexasphere>();
 			if ((this.hexa != null) && (this.heightMap != null) && (this.waterMask != null))
 			{
@@ -33,10 +30,6 @@ namespace Orbital
 
 		void Update () 
 		{
-			if (this.collider != null)
-			{
-				this.collider.radius = 0.5f;
-			}
 			this.transform.RotateAround(this.transform.position, this.transform.up, this.rotationSpeed*Time.deltaTime);
 		}
 	}

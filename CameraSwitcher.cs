@@ -7,12 +7,15 @@ namespace Orbital
 	public class CameraSwitcher : MonoBehaviour 
 	{
 		public static Orbital.CameraSwitcher Instance = null;
+		public static float ZoomBaseline = 22.0f;
 
+		public KGFOrbitCam OrbitCam;
 		public KGFOrbitCamSettings PlanetView;
 		public KGFOrbitCamSettings LauncherView;
 
 		void Awake() 
 		{
+			this.OrbitCam = this.GetComponent<KGFOrbitCam>();
 			Orbital.CameraSwitcher.Instance = this;
 		}
 
@@ -41,7 +44,13 @@ namespace Orbital
 		
 		void Update () 
 		{
-			
+			if (this.OrbitCam != null)
+			{
+				float maxOrbitalDistance = Orbiter.GetLargestOrbitalDistance();
+
+				float zoom = maxOrbitalDistance + ZoomBaseline;
+				this.OrbitCam.SetZoom(zoom);
+			}
 		}
 	}
 }

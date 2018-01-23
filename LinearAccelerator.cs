@@ -141,7 +141,7 @@ namespace Orbital
 				this.ForceAmount = Mathf.Lerp(this.ForceAmountMin, this.ForceAmountMax, launchStick.magnitude);
 			}
 
-			if ((launchStick.x > 0) && (launchStick.y > 0))
+			if ((launchStick.x > 0) && (launchStick.y >= 0))
 			{
 				if (this.PathRenderer != null)
 				{
@@ -150,7 +150,7 @@ namespace Orbital
 				this.ForceAngle = Vector2.Angle(launchStick, Vector2.right);
 				this.ForceAngle = Mathf.Clamp(this.ForceAngle, this.ForceAngleMin, this.ForceAngleMax);
 			}
-			else if ((launchStick.x < 0) && (launchStick.y < 0))
+			else if ((launchStick.x < 0) && (launchStick.y <= 0))
 			{
 				if (this.PathRenderer != null)
 				{
