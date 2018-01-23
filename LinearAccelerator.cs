@@ -102,24 +102,69 @@ namespace Orbital
 			}
     	}
 
+    	private void EnableButton(string name)
+    	{
+			UltimateButton b = UltimateButton.GetUltimateButton(name);
+			if ((b != null) && !b.isActiveAndEnabled)
+			{
+				b.gameObject.SetActive(true);
+			}
+    	}
+
+		private void DisableButton(string name)
+    	{
+			UltimateButton b = UltimateButton.GetUltimateButton(name);
+			if ((b != null) && b.isActiveAndEnabled)
+			{
+				b.gameObject.SetActive(false);
+			}
+    	}
+
+		private void EnableStick(string name)
+    	{
+			UltimateJoystick s = UltimateJoystick.GetJoystick(name);
+			if ((s != null) && !s.isActiveAndEnabled)
+			{
+				s.gameObject.SetActive(true);
+			}
+    	}
+
+		private void DisableStick(string name)
+    	{
+			UltimateJoystick s = UltimateJoystick.GetJoystick(name);
+			if ((s != null) && s.isActiveAndEnabled)
+			{
+				s.gameObject.SetActive(false);
+			}
+    	}
+
 		void Update () 
 		{
 			Vector3 angles = this.transform.localRotation.eulerAngles;
 			angles.x = this.ForceAngle;
 			this.transform.localRotation = Quaternion.Euler(angles);
 
-			//Vector3 baseAngles = this.transform.parent.localRotation.eulerAngles;
-			//baseAngles.y = this.ForceRotation;
-			//this.transform.parent.localRotation = Quaternion.Euler(baseAngles);
-
-			if (UltimateButton.GetButtonDown("LaunchButton"))
+			if (this.LastLaunched != null)
 			{
-				if (this.LastLaunched != null)
+				this.EnableButton("BoostButton");
+
+				this.DisableButton("LaunchButton");
+				this.DisableStick("LaunchStick");
+
+				if (UltimateButton.GetButtonDown("BoostButton"))
 				{
 					this.Boost(this.LastLaunched);
 					this.LastLaunched = null;
 				}
-				else 
+			}
+			else 
+			{
+				this.EnableButton("LaunchButton");
+				this.EnableStick("LaunchStick");
+
+				this.DisableButton("BoostButton");
+
+				if (UltimateButton.GetButtonDown("LaunchButton"))
 				{
 					this.LaunchNext();
 				}
