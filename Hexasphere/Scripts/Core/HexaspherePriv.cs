@@ -33,10 +33,10 @@ namespace HexasphereGrid {
 								const float MAX_FIELD_OF_VIEW = 85.0f;
 								const int MAX_TEXTURES = 255;
 
-								Material _tileShadedFrameMatExtrusion, _tileShadedFrameMatNoExtrusion;
-								Material _gridMatExtrusion, _gridMatNoExtrusion;
-								Material _tileColoredMat, _tileTexturedMat;
-								Material highlightMaterial;
+								//public Material _tileShadedFrameMatExtrusion, _tileShadedFrameMatNoExtrusion;
+								//public Material _gridMatExtrusion, _gridMatNoExtrusion;
+								//public Material _tileColoredMat, _tileTexturedMat;
+								public Material highlightMaterial;
 								int currentDivisions, currentTextureSize;
 								bool currentExtruded, currentInvertedMode, currentWireframeColorFromTile;
 								Color currentDefautlShadedColor;
@@ -49,7 +49,7 @@ namespace HexasphereGrid {
 								Quaternion flyingStartRotation, flyingEndRotation;
 								bool flying;
 								float flyingStartTime, flyingDuration;
-								Texture2D defaultRampTexture;
+								public Texture2D defaultRampTexture;
 								SphereCollider sphereCollider;
 								int lastHitTileIndex;
 								Texture2D whiteTex;
@@ -526,65 +526,65 @@ namespace HexasphereGrid {
 								bool[] colorWireDirty = new bool[HEXASPHERE_MAX_PARTS];
 								[SerializeField] Vector3 oldCameraPosition;
 
-								Material gridMatExtrusion {
-												get {
-																if (_gridMatExtrusion == null) {
-																				_gridMatExtrusion = new Material (Shader.Find ("Hexasphere/HexaGridExtrusion"));
-																				_gridMatExtrusion.hideFlags = HideFlags.DontSave;
-																}
-																return _gridMatExtrusion;
-												}
-								}
-
-								Material gridMatNoExtrusion {
-												get {
-																if (_gridMatNoExtrusion == null) {
-																				_gridMatNoExtrusion = Instantiate (Resources.Load<Material> ("Materials/HexaGridMatNoExtrusion")) as Material;
-																				_gridMatNoExtrusion.hideFlags = HideFlags.DontSave;
-																}
-																return _gridMatNoExtrusion;
-												}
-								}
-
-								Material tileShadedFrameMatExtrusion {
-												get {
-																if (_tileShadedFrameMatExtrusion == null) {
-																				_tileShadedFrameMatExtrusion = new Material (Shader.Find ("Hexasphere/HexaTileBackgroundExtrusion"));
-																				_tileShadedFrameMatExtrusion.hideFlags = HideFlags.DontSave;
-																}
-																return _tileShadedFrameMatExtrusion;
-												}
-								}
-
-								Material tileShadedFrameMatNoExtrusion {
-												get {
-																if (_tileShadedFrameMatNoExtrusion == null) {
-																				_tileShadedFrameMatNoExtrusion = Instantiate (Resources.Load<Material> ("Materials/HexaTilesBackgroundMatNoExtrusion")) as Material;
-																				_tileShadedFrameMatNoExtrusion.hideFlags = HideFlags.DontSave;
-																}
-																return _tileShadedFrameMatNoExtrusion;
-												}
-								}
-
-								Material tileColoredMat {
-												get {
-																if (_tileColoredMat == null) {
-																				_tileColoredMat = Instantiate (Resources.Load<Material> ("Materials/HexaTilesMat")) as Material;
-																				_tileColoredMat.hideFlags = HideFlags.DontSave;
-																}
-																return _tileColoredMat;
-												}
-								}
-
-								Material tileTexturedMat {
-												get {
-																if (_tileTexturedMat == null) {
-																				_tileTexturedMat = Instantiate (Resources.Load<Material> ("Materials/HexaTilesTexturedMat")) as Material;
-																				_tileTexturedMat.hideFlags = HideFlags.DontSave;
-																}
-																return _tileTexturedMat;
-												}
-								}
+//								Material gridMatExtrusion {
+//												get {
+//																if (_gridMatExtrusion == null) {
+//																				_gridMatExtrusion = new Material (Shader.Find ("Hexasphere/HexaGridExtrusion"));
+//																				_gridMatExtrusion.hideFlags = HideFlags.DontSave;
+//																}
+//																return _gridMatExtrusion;
+//												}
+//								}
+//
+//								Material gridMatNoExtrusion {
+//												get {
+//																if (_gridMatNoExtrusion == null) {
+//																				_gridMatNoExtrusion = Instantiate (Resources.Load<Material> ("Materials/HexaGridMatNoExtrusion")) as Material;
+//																				_gridMatNoExtrusion.hideFlags = HideFlags.DontSave;
+//																}
+//																return _gridMatNoExtrusion;
+//												}
+//								}
+//
+//								Material tileShadedFrameMatExtrusion {
+//												get {
+//																if (_tileShadedFrameMatExtrusion == null) {
+//																				_tileShadedFrameMatExtrusion = new Material (Shader.Find ("Hexasphere/HexaTileBackgroundExtrusion"));
+//																				_tileShadedFrameMatExtrusion.hideFlags = HideFlags.DontSave;
+//																}
+//																return _tileShadedFrameMatExtrusion;
+//												}
+//								}
+//
+//								Material tileShadedFrameMatNoExtrusion {
+//												get {
+//																if (_tileShadedFrameMatNoExtrusion == null) {
+//																				_tileShadedFrameMatNoExtrusion = Instantiate (Resources.Load<Material> ("Materials/HexaTilesBackgroundMatNoExtrusion")) as Material;
+//																				_tileShadedFrameMatNoExtrusion.hideFlags = HideFlags.DontSave;
+//																}
+//																return _tileShadedFrameMatNoExtrusion;
+//												}
+//								}
+//
+//								Material tileColoredMat {
+//												get {
+//																if (_tileColoredMat == null) {
+//																				_tileColoredMat = Instantiate (Resources.Load<Material> ("Materials/HexaTilesMat")) as Material;
+//																				_tileColoredMat.hideFlags = HideFlags.DontSave;
+//																}
+//																return _tileColoredMat;
+//												}
+//								}
+//
+//								Material tileTexturedMat {
+//												get {
+//																if (_tileTexturedMat == null) {
+//																				_tileTexturedMat = Instantiate (Resources.Load<Material> ("Materials/HexaTilesTexturedMat")) as Material;
+//																				_tileTexturedMat.hideFlags = HideFlags.DontSave;
+//																}
+//																return _tileTexturedMat;
+//												}
+//								}
 
 
 

@@ -192,6 +192,113 @@ namespace HexasphereGrid {
 												}
 								}
 
+								//public Material _tileShadedFrameMatExtrusion, _tileShadedFrameMatNoExtrusion;
+								//public Material _gridMatExtrusion, _gridMatNoExtrusion;
+								//public Material _tileColoredMat, _tileTexturedMat;
+
+
+								[SerializeField]
+								Material _tileShadedFrameMatExtrusion;
+
+								public Material tileShadedFrameMatExtrusion {
+												get { 
+													if (_tileShadedFrameMatExtrusion == null) {
+														_tileShadedFrameMatExtrusion = new Material (Shader.Find ("Hexasphere/HexaTileBackgroundExtrusion"));
+													}
+													return _tileShadedFrameMatExtrusion; 
+												}
+												set {
+													if (_tileShadedFrameMatExtrusion != value) {
+																				_tileShadedFrameMatExtrusion = value;
+																				UpdateMaterialProperties ();
+																}
+												}
+								}
+
+								[SerializeField]
+								Material _tileShadedFrameMatNoExtrusion;
+
+								public Material tileShadedFrameMatNoExtrusion {
+												get { 
+													if (_tileShadedFrameMatNoExtrusion == null) {
+														_tileShadedFrameMatNoExtrusion = new Material (Shader.Find ("Hexasphere/HexaTileBackgroundExtrusion"));
+													}
+													return _tileShadedFrameMatNoExtrusion; 
+												}
+												set {
+													if (_tileShadedFrameMatNoExtrusion != value) {
+																				_tileShadedFrameMatNoExtrusion = value;
+																				UpdateMaterialProperties ();
+																}
+												}
+								}
+
+								[SerializeField]
+								Material _gridMatExtrusion;
+
+								public Material gridMatExtrusion {
+												get { 
+														if (_gridMatExtrusion == null) { 
+															_gridMatExtrusion = new Material (Shader.Find ("Hexasphere/HexaGridExtrusion"));
+														}
+														return _gridMatExtrusion; 
+													}
+												set {
+													if (_gridMatExtrusion != value) {
+																				_gridMatExtrusion = value;
+																				UpdateMaterialProperties ();
+																}
+												}
+								}
+
+								[SerializeField]
+								Material _gridMatNoExtrusion;
+
+								public Material gridMatNoExtrusion {
+												get { 
+													if (_gridMatNoExtrusion == null) { 
+															_gridMatNoExtrusion = Instantiate (Resources.Load<Material> ("Materials/HexaGridMatNoExtrusion")) as Material;
+														}
+														return _gridMatNoExtrusion; 
+													}
+												set {
+													if (_gridMatNoExtrusion != value) {
+																				_gridMatNoExtrusion = value;
+																				UpdateMaterialProperties ();
+																}
+												}
+								}
+
+								[SerializeField]
+								Material _tileColoredMat;
+
+								public Material tileColoredMat {
+												get { 
+													if (_tileColoredMat == null) {
+														_tileColoredMat = Instantiate (Resources.Load<Material> ("Materials/HexaTilesMat")) as Material;
+													}
+													return _tileColoredMat; 
+												}
+												set {
+													if (_tileColoredMat != value) {
+																				_tileColoredMat = value;
+																				UpdateMaterialProperties ();
+																}
+												}
+								}
+
+								[SerializeField]
+								Material _tileTexturedMat;
+
+								public Material tileTexturedMat {
+												get { return _tileTexturedMat; }
+												set {
+													if (_tileTexturedMat != value) {
+																				_tileTexturedMat = value;
+																				UpdateMaterialProperties ();
+																}
+												}
+								}
 
 								[SerializeField]
 								Vector3 _rotationShift;
