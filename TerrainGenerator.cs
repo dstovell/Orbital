@@ -37,17 +37,32 @@ namespace Orbital
 
 				//Rotator.transform.rotation = Quaternion.AngleAxis(Random.value*360, this.transform.up);
 
+				Vector3 randomVector = new Vector3(Random.Range(-1, 1), Random.Range(-1, 1), Random.Range(-1, 1));
+				//randomVector.Normalize();
+
 				for (int v=0; v<verts.Length; v++)
 				{
 					Vector3 vert = verts[v];
-					Vector3 dir = vert.normalized;
-					Vector3 worldPos = vert + this.transform.position;
-					if (this.Raise.bounds.Contains(worldPos))
+					Vector3 dir = (vert - mesh.bounds.center).normalized;
+
+//					Vector3 worldPos = vert + this.transform.position;
+//					if (this.Raise.bounds.Contains(worldPos))
+//					{
+//						raised++;
+//						verts[v] = vert + this.RaiseAmount*dir;
+//					}
+//					else if (this.Lower.bounds.Contains(worldPos))
+//					{
+//						lowered++;
+//						verts[v] = vert - this.RaiseAmount*dir;
+//					}
+					//Debug.Log("dir=" + dir + " angle:" + Vector3.Angle(dir, randomVector));
+					if (Vector3.Angle(dir, randomVector) > 90)
 					{
 						raised++;
 						verts[v] = vert + this.RaiseAmount*dir;
 					}
-					else if (this.Lower.bounds.Contains(worldPos))
+					else
 					{
 						lowered++;
 						verts[v] = vert - this.RaiseAmount*dir;
