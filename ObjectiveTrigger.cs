@@ -13,6 +13,7 @@ namespace Orbital
 
 			SphereCollider sc = go.AddComponent<SphereCollider>();
 			sc.radius = radius;
+			sc.isTrigger = true;
 
 			ObjectiveTrigger ot = go.AddComponent<ObjectiveTrigger>();
 			return ot;
