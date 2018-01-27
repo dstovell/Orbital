@@ -7,6 +7,9 @@ namespace Orbital
 	public abstract class TerrainGenerator : MonoBehaviour 
 	{
 		public bool GenerateNow = false;
+		public int RandomSeed = 1337;
+
+		public int HexDivsions = 8;
 
 		public MeshFilter TerrainMesh;
 		public HexasphereGrid.Hexasphere HexSphere;
@@ -20,6 +23,7 @@ namespace Orbital
 
 		public bool GenerateTerrain()
 		{
+			Random.seed = this.RandomSeed;
 			if (this.HexSphere != null)
 			{
 				this.HexSphere.extruded = true;

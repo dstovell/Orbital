@@ -618,7 +618,7 @@ namespace HexasphereGrid {
 																}
 												}
 
-												if (tiles == null || currentDivisions != _numDivisions || currentStyle != _style || currentTextureSize != _tileTextureSize || currentDefautlShadedColor != _defaultShadedColor || currentExtruded != _extruded || _rotationShift != currentRotationShift || _invertedMode != currentInvertedMode) {
+												if (tiles == null || /*currentDivisions != _numDivisions ||*/ currentStyle != _style || currentTextureSize != _tileTextureSize || currentDefautlShadedColor != _defaultShadedColor || currentExtruded != _extruded || _rotationShift != currentRotationShift || _invertedMode != currentInvertedMode) {
 																Generate ();
 												} else {
 																if (currentWireframeColorFromTile != _wireframeColorFromTile) {

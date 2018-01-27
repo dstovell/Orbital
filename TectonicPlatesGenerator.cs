@@ -6,10 +6,13 @@ namespace Orbital
 {
 	public class TectonicPlatesGenerator : TerrainGenerator 
 	{
-		//public float PlateCount = 1.0f;
 		public int PlateCount = 10;
+		public float ChanceOfFillRequeue = 0.8f;
+		public float ChanceOfWaterPlate = 0.5f;
 
 		public Dictionary<int, HexasphereGrid.Tile> UsedTiles;
+
+		public TerrainElevation [] Elevations;
 
 		public override bool GenerateTerrain(MeshFilter terrainMesh)
 		{
@@ -37,6 +40,19 @@ namespace Orbital
 			return true;
 		}
 
+		public TerrainElevation GetElevation(float extrusion)
+		{
+			for (int i=0; i<this.Elevations.Length; i++)
+			{
+				TerrainElevation e = this.Elevations[i];
+				if (e.IsExtrusionMatch(extrusion))
+				{
+					return e;
+				}
+			}
+			return null;
+		}
+
 		public TectonicPlate[] BuildPlates(HexasphereGrid.Hexasphere hexSphere)
 		{
 			TectonicPlate[] plates = new TectonicPlate[this.PlateCount];
@@ -47,16 +63,20 @@ namespace Orbital
 			for (int i=0; i<plates.Length; i++)
 			{
 				int randomIndex = Random.Range(0, tiles.Length);
-				plates[i] = new TectonicPlate(this.HexSphere, tiles[randomIndex], this.UsedTiles);
+				bool isWater = (Random.value < this.ChanceOfWaterPlate);
+				float extrusion = isWater ? Random.Range(0.0f, this.SeaLevel) : Random.Range(this.SeaLevel, 1.0f);
+				TerrainElevation elevation = this.GetElevation(extrusion);
+				Color color = (elevation != null) ? elevation.TerrainColor : Color.black;
+				plates[i] = new TectonicPlate(this.HexSphere, tiles[randomIndex], isWater, extrusion, color, this.UsedTiles);
 			}
 
-			int maxLoop = 50;
+			int maxLoop = 100;
 			for (int i=0; i<maxLoop; i++)
 			{
 				bool addedAny = false;
 				for (int j=0; j<plates.Length; j++)
 				{
-					bool added = plates[j].Fill(this.UsedTiles);
+					bool added = plates[j].Fill(this.UsedTiles, this.ChanceOfFillRequeue);
 					if (added)
 					{
 						addedAny = true;
@@ -73,9 +93,7 @@ namespace Orbital
 			for (int i=0; i<plates.Length; i++)
 			{
 				TectonicPlate p = plates[i];
-				bool isWater = (p.plateColor == Color.blue);
-				float extrudeAmount = isWater ? Random.Range(0.0f, this.SeaLevel) : Random.Range(this.SeaLevel, 1.0f);
-				this.HexSphere.SetTileExtrudeAmount(p.Tiles, extrudeAmount);
+				this.HexSphere.SetTileExtrudeAmount(p.Tiles, p.extrusion);
 			}
 
 			Debug.Log("Stopped UsedTiles " + this.UsedTiles.Count + " / " + tiles.Length);
@@ -83,9 +101,13 @@ namespace Orbital
 			return plates;
 		}
 
-		void Start () 
+		void Start() 
 		{
-			//GenerateTerrain();
+			this.Elevations = this.GetComponents<TerrainElevation>();
+			if (this.HexSphere != null)
+			{
+				this.HexSphere.numDivisions = this.HexDivsions;
+			}
 		}
 	}
 
@@ -99,21 +121,26 @@ namespace Orbital
 
 		public List<HexasphereGrid.Tile> Queue;
 
+		public bool isWater = false;
 		public Color plateColor;
+		public float extrusion;
 
-		public TectonicPlate(HexasphereGrid.Hexasphere hexSphere, HexasphereGrid.Tile center, Dictionary<int, HexasphereGrid.Tile> usedTiles = null)
+		public TectonicPlate(HexasphereGrid.Hexasphere hexSphere, HexasphereGrid.Tile center, bool isWater, float _extrusion, Color color, Dictionary<int, HexasphereGrid.Tile> usedTiles = null)
 		{
 			this.HexSphere = hexSphere;
 			this.Center = center;
 			this.Tiles = new List<HexasphereGrid.Tile>();
 			this.Queue = new List<HexasphereGrid.Tile>();
 
+			this.isWater = (Random.value > 0.5f);
+			this.extrusion = _extrusion;
+
 			//this.plateColor = Random.ColorHSV();
-			this.plateColor = (Random.value > 0.5f) ? Color.green : Color.blue;
+			this.plateColor = color;
 		
 			this.AddTile(center, usedTiles);
 
-			hexSphere.SetTileColor(center.index, Color.red);
+			//hexSphere.SetTileColor(center.index, Color.red);
 		}
 
 		private bool AddTile(HexasphereGrid.Tile t, Dictionary<int, HexasphereGrid.Tile> usedTiles = null)
@@ -127,8 +154,6 @@ namespace Orbital
 
 				usedTiles[t.index] = t;
 			}
-
-			//Debug.Log("Added Tile index=" + t.index);
 
 			this.Tiles.Add(t);
 
@@ -156,7 +181,7 @@ namespace Orbital
 			return true;
 		}
 
-		public bool Fill(Dictionary<int, HexasphereGrid.Tile> usedTiles)
+		public bool Fill(Dictionary<int, HexasphereGrid.Tile> usedTiles, float chanceOfFillRequeue)
 		{
 			List<HexasphereGrid.Tile> q = this.Queue;
 			this.Queue = new List<HexasphereGrid.Tile>();
@@ -165,7 +190,16 @@ namespace Orbital
 			HexasphereGrid.Tile[] currentTiles = this.Tiles.ToArray();
 			for (int i=0; i<q.Count; i++)
 			{
-				bool added = this.AddTile(q[i], usedTiles);
+				HexasphereGrid.Tile t = q[i];
+				bool requeue = (Random.value < chanceOfFillRequeue);
+				if (requeue)
+				{
+					tilesAdded = true;
+					this.AddTileQueue(t, usedTiles);
+					continue;
+				}
+
+				bool added = this.AddTile(t, usedTiles);
 				if (added)
 				{
 					tilesAdded = true;
