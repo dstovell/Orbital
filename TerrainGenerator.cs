@@ -4,87 +4,43 @@ using UnityEngine;
 
 namespace Orbital
 {
-	public class TerrainGenerator : MonoBehaviour 
+	public abstract class TerrainGenerator : MonoBehaviour 
 	{
-		public MeshFilter Terrain;
-		public GameObject Rotator;
-		public BoxCollider Raise;
-		public BoxCollider Lower;
+		public bool GenerateNow = false;
 
-		public float RaiseAmount = 0.1f;
-		public int Iterations = 10;
+		public MeshFilter TerrainMesh;
+		public HexasphereGrid.Hexasphere HexSphere;
 
-		public void Generate(int interations)
+		public float SeaLevel = 0.1f;
+		public float ExtrusionMultiplier = 0.1f;
+
+		public abstract bool GenerateTerrain(MeshFilter terrainMesh);
+
+		public abstract bool GenerateTerrain(HexasphereGrid.Hexasphere hexSphere);
+
+		public bool GenerateTerrain()
 		{
-			if ((this.Terrain == null) || (this.Rotator == null) || (this.Raise == null) || (this.Lower == null))
+			if (this.HexSphere != null)
 			{
-				return;
+				this.HexSphere.extruded = true;
+				this.HexSphere.extrudeMultiplier = this.ExtrusionMultiplier;
+				return this.GenerateTerrain(this.HexSphere);
+			}
+			else if (this.TerrainMesh != null)
+			{
+				return this.GenerateTerrain(this.TerrainMesh);
 			}
 
-			Mesh mesh = this.Terrain.mesh;
+			return false;
+		}
 
-			//Rotator.transform.rotation = Quaternion.AngleAxis(Random.value*360, this.transform.up);
-
-			for (int i=0; i<this.Iterations; i++)
-			{			
-				
-				Vector3[] verts = mesh.vertices;
-
-				int raised = 0;
-				int lowered = 0;
-
-				//Rotator.transform.rotation = Random.rotation;
-
-				//Rotator.transform.rotation = Quaternion.AngleAxis(Random.value*360, this.transform.up);
-
-				Vector3 randomVector = new Vector3(Random.Range(-1, 1), Random.Range(-1, 1), Random.Range(-1, 1));
-				//randomVector.Normalize();
-
-				for (int v=0; v<verts.Length; v++)
-				{
-					Vector3 vert = verts[v];
-					Vector3 dir = (vert - mesh.bounds.center).normalized;
-
-//					Vector3 worldPos = vert + this.transform.position;
-//					if (this.Raise.bounds.Contains(worldPos))
-//					{
-//						raised++;
-//						verts[v] = vert + this.RaiseAmount*dir;
-//					}
-//					else if (this.Lower.bounds.Contains(worldPos))
-//					{
-//						lowered++;
-//						verts[v] = vert - this.RaiseAmount*dir;
-//					}
-					//Debug.Log("dir=" + dir + " angle:" + Vector3.Angle(dir, randomVector));
-					if (Vector3.Angle(dir, randomVector) > 90)
-					{
-						raised++;
-						verts[v] = vert + this.RaiseAmount*dir;
-					}
-					else
-					{
-						lowered++;
-						verts[v] = vert - this.RaiseAmount*dir;
-					}
-				}
-
-				Debug.Log("lowered=" + lowered + " raised=" + raised);
-
-				mesh.vertices = verts;
-				mesh.RecalculateNormals();
+		void Update()
+		{
+			if (this.GenerateNow)
+			{
+				this.GenerateTerrain();
+				this.GenerateNow = false;
 			}
-		}
-
-		void Start () 
-		{
-			Generate(10);
-		}
-		
-		// Update is called once per frame
-		void Update () 
-		{
-			
 		}
 	}
 }

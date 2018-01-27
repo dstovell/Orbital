@@ -805,7 +805,7 @@ namespace HexasphereGrid {
 								}
 
 
-								void RebuildWireframe() {
+								public void RebuildWireframe() {
 												Transform t = gameObject.transform.Find (HEXASPHERE_WIREFRAME);
 												if (t != null)
 																DestroyImmediate (t.gameObject);
