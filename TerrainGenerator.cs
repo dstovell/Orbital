@@ -9,10 +9,7 @@ namespace Orbital
 		public bool GenerateNow = false;
 		public int RandomSeed = 1337;
 
-		public int HexDivsions = 8;
-
 		public MeshFilter TerrainMesh;
-		public HexasphereGrid.Hexasphere HexSphere;
 		public Hexsphere HexPlanet;
 
 		public float SeaLevel = 0.1f;
@@ -21,8 +18,6 @@ namespace Orbital
 		public TerrainElevation [] Elevations;
 
 		public abstract bool GenerateTerrain(MeshFilter terrainMesh);
-
-		public abstract bool GenerateTerrain(HexasphereGrid.Hexasphere hexSphere);
 
 		public abstract bool GenerateTerrain(Hexsphere hexPlanet);
 
@@ -34,13 +29,7 @@ namespace Orbital
 			}
 
 			Random.seed = this.RandomSeed;
-			if (this.HexSphere != null)
-			{
-				this.HexSphere.extruded = true;
-				this.HexSphere.extrudeMultiplier = this.ExtrusionMultiplier;
-				return this.GenerateTerrain(this.HexSphere);
-			}
-			else if (this.HexPlanet != null)
+			if (this.HexPlanet != null)
 			{
 				return this.GenerateTerrain(this.HexPlanet);
 			}

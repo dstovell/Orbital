@@ -38,44 +38,6 @@ namespace Orbital
 			return true;
 		}
 
-		public override bool GenerateTerrain(HexasphereGrid.Hexasphere hexSphere)
-		{
-			if (hexSphere == null)
-			{
-				return false;
-			}
-
-			Vector3 center = Vector3.zero;
-			HexasphereGrid.Tile[] tiles = hexSphere.tiles;
-
-			Vector3[] positions = new Vector3[tiles.Length];
-
-			for (int t=0; t<tiles.Length; t++)
-			{
-				positions[t] = tiles[t].center;
-			}
-
-			float[] extrusions = this.GeneratePlanarExtrusions(center, positions, this.Iterations);
-
-			for (int t=0; t<tiles.Length; t++)
-			{
-				float extrusion = extrusions[t];
-				hexSphere.SetTileExtrudeAmount(tiles[t].index, extrusion);
-				tiles[t].heightMapValue = extrusion;
-
-				if (extrusion > this.SeaLevel)
-				{
-					hexSphere.SetTileColor(tiles[t].index, Color.green);
-				}
-				else {
-					hexSphere.SetTileColor(tiles[t].index, Color.blue);
-				}
-				//Debug.Log("SetTileExtrudeAmount index=" + tiles[t].index + " extrusion=" + extrusions[t]);
-			}
-
-			return true;
-		}
-
 		public override bool GenerateTerrain(Hexsphere hexPlanet)
 		{
 			return false;
@@ -101,7 +63,6 @@ namespace Orbital
 				float minAngle = 180.0f;
 				float maxAngle = 0.0f;
 
-				//randomVector.Set(Random.Range(-1, 1), Random.Range(-1, 1), Random.Range(-1, 1));
 				randomVector = Random.insideUnitSphere;
 
 				for (int p=0; p<positions.Length; p++)
@@ -130,7 +91,6 @@ namespace Orbital
 
 		void Start () 
 		{
-			//GenerateTerrain();
 		}
 	}
 }
