@@ -1483,10 +1483,19 @@ namespace HexasphereGrid {
 																textureCache [texture] = mat;
 												}
 												mat.hideFlags = HideFlags.DontSave;
-												mat.color = color;
+												this.SetMaterialColor(mat, color);
 												return mat;
 								}
 
+								void SetMaterialColor(Material mat, Color color) {
+									mat.SetColor("_Color", color);
+									mat.SetColor("_Tint", color);
+									//mat.color = color;
+								}
+
+								Color GetMaterialColor(Material mat) {
+									return mat.color;
+								}
 
 								void HideHighlightedTile () {
 												if (lastHighlightedTileIndex >= 0 && lastHighlightedTile != null && lastHighlightedTile.renderer != null && lastHighlightedTile.renderer.sharedMaterial == highlightMaterial) {
