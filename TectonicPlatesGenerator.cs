@@ -10,6 +10,9 @@ namespace Orbital
 		public float ChanceOfFillRequeue = 0.8f;
 		public float ChanceOfWaterPlate = 0.5f;
 
+		public float MinPlateExtrusion = 0.0f;
+		public float MaxPlateExtrusion = 0.6f;
+
 		public Dictionary<int, HexasphereGrid.Tile> HexasphereUsedTiles;
 
 		public Dictionary<int, Tile> HexplanetUsedTiles;
@@ -116,7 +119,7 @@ namespace Orbital
 				int randomIndex = Random.Range(0, tiles.Length);
 				bool isWater = (Random.value < this.ChanceOfWaterPlate);
 				float topLayer = 0.05f;
-				float extrusion = isWater ? Random.Range(0.0f, this.SeaLevel-topLayer) : Random.Range(this.SeaLevel+topLayer, 1.0f);
+				float extrusion = isWater ? Random.Range(this.MinPlateExtrusion, this.SeaLevel-topLayer) : Random.Range(this.SeaLevel+topLayer, this.MaxPlateExtrusion);
 				TerrainElevation elevation = this.GetElevation(extrusion);
 				Color color = (elevation != null) ? elevation.TerrainColor : Color.black;
 				plates[i] = new HexplanetTectonicPlate(hexPlanet, tiles[randomIndex], isWater, extrusion*this.ExtrusionMultiplier, color, this.HexplanetUsedTiles);
