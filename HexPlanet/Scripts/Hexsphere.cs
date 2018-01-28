@@ -66,7 +66,10 @@ public class Hexsphere : MonoBehaviour {
 			//Assign tile attributes
 			MapBuilder ();
 		}
-		navManager.setWorldTiles (tiles);
+		if (navManager != null)
+		{
+			navManager.setWorldTiles (tiles);
+		}
 	}
 
 	
@@ -121,7 +124,10 @@ public class Hexsphere : MonoBehaviour {
 		tilesGenerated = true;
 
 		//Assign tiles to navManager
-		navManager.setWorldTiles (tiles);
+		if (navManager != null)
+		{
+			navManager.setWorldTiles (tiles);
+		}
 	}
 	
 	private void removeTileColliders(){

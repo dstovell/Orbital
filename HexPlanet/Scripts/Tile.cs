@@ -62,11 +62,17 @@ public class Tile : MonoBehaviour {
 	}
 
 	void OnMouseEnter(){
-		Pointer.instance.setPointer (PointerStatus.TILE, transform);
+		if (Pointer.instance != null)
+		{
+			Pointer.instance.setPointer (PointerStatus.TILE, transform);
+		}
 		
 	}
 	void OnMouseExit(){
-		Pointer.instance.unsetPointer ();
+		if (Pointer.instance != null)
+		{
+			Pointer.instance.unsetPointer ();
+		}
 	}
 	
 	void OnMouseDown(){
