@@ -115,10 +115,11 @@ namespace Orbital
 			{
 				int randomIndex = Random.Range(0, tiles.Length);
 				bool isWater = (Random.value < this.ChanceOfWaterPlate);
-				float extrusion = isWater ? Random.Range(0.0f, this.SeaLevel) : Random.Range(this.SeaLevel, 1.0f);
+				float topLayer = 0.05f;
+				float extrusion = isWater ? Random.Range(0.0f, this.SeaLevel-topLayer) : Random.Range(this.SeaLevel+topLayer, 1.0f);
 				TerrainElevation elevation = this.GetElevation(extrusion);
 				Color color = (elevation != null) ? elevation.TerrainColor : Color.black;
-				plates[i] = new HexplanetTectonicPlate(hexPlanet, tiles[randomIndex], isWater, extrusion, color, this.HexplanetUsedTiles);
+				plates[i] = new HexplanetTectonicPlate(hexPlanet, tiles[randomIndex], isWater, extrusion*this.ExtrusionMultiplier, color, this.HexplanetUsedTiles);
 			}
 
 			int maxLoop = 100;
