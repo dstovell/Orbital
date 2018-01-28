@@ -10,9 +10,7 @@ namespace Orbital
 		public float ChanceOfFillRequeue = 0.8f;
 		public float ChanceOfWaterPlate = 0.5f;
 
-		public Dictionary<int, HexasphereGrid.Tile> UsedTiles;
-
-		public TerrainElevation [] Elevations;
+		public Dictionary<int, HexasphereGrid.Tile> HexasphereUsedTiles;
 
 		public override bool GenerateTerrain(MeshFilter terrainMesh)
 		{
@@ -40,24 +38,22 @@ namespace Orbital
 			return true;
 		}
 
-		public TerrainElevation GetElevation(float extrusion)
+		public override bool GenerateTerrain(Hexsphere hexPlanet)
 		{
-			for (int i=0; i<this.Elevations.Length; i++)
-			{
-				TerrainElevation e = this.Elevations[i];
-				if (e.IsExtrusionMatch(extrusion))
-				{
-					return e;
-				}
-			}
-			return null;
+			hexPlanet.setWorldScale(2.8f);
+
+			Tile[] tiles = hexPlanet.gameObject.GetComponentsInChildren<Tile>();
+
+			Debug.Log("HexPlanet found " + tiles.Length);
+
+			return false;
 		}
 
 		public TectonicPlate[] BuildPlates(HexasphereGrid.Hexasphere hexSphere)
 		{
 			TectonicPlate[] plates = new TectonicPlate[this.PlateCount];
 
-			this.UsedTiles = new Dictionary<int, HexasphereGrid.Tile>();
+			this.HexasphereUsedTiles = new Dictionary<int, HexasphereGrid.Tile>();
 
 			HexasphereGrid.Tile[] tiles = this.HexSphere.tiles;
 			for (int i=0; i<plates.Length; i++)
@@ -67,7 +63,7 @@ namespace Orbital
 				float extrusion = isWater ? Random.Range(0.0f, this.SeaLevel) : Random.Range(this.SeaLevel, 1.0f);
 				TerrainElevation elevation = this.GetElevation(extrusion);
 				Color color = (elevation != null) ? elevation.TerrainColor : Color.black;
-				plates[i] = new TectonicPlate(this.HexSphere, tiles[randomIndex], isWater, extrusion, color, this.UsedTiles);
+				plates[i] = new TectonicPlate(this.HexSphere, tiles[randomIndex], isWater, extrusion, color, this.HexasphereUsedTiles);
 			}
 
 			int maxLoop = 100;
@@ -76,7 +72,7 @@ namespace Orbital
 				bool addedAny = false;
 				for (int j=0; j<plates.Length; j++)
 				{
-					bool added = plates[j].Fill(this.UsedTiles, this.ChanceOfFillRequeue);
+					bool added = plates[j].Fill(this.HexasphereUsedTiles, this.ChanceOfFillRequeue);
 					if (added)
 					{
 						addedAny = true;
@@ -96,14 +92,13 @@ namespace Orbital
 				this.HexSphere.SetTileExtrudeAmount(p.Tiles, p.extrusion);
 			}
 
-			Debug.Log("Stopped UsedTiles " + this.UsedTiles.Count + " / " + tiles.Length);
+			Debug.Log("Stopped UsedTiles " + this.HexasphereUsedTiles.Count + " / " + tiles.Length);
 
 			return plates;
 		}
 
 		void Start() 
 		{
-			this.Elevations = this.GetComponents<TerrainElevation>();
 			if (this.HexSphere != null)
 			{
 				this.HexSphere.numDivisions = this.HexDivsions;

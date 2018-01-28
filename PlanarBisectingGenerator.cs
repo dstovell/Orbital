@@ -76,6 +76,11 @@ namespace Orbital
 			return true;
 		}
 
+		public override bool GenerateTerrain(Hexsphere hexPlanet)
+		{
+			return false;
+		}
+
 		public float[] GeneratePlanarExtrusions(Vector3 center, Vector3[] positions, int interations)
 		{
 			float maxExtrusion = 1.0f;
