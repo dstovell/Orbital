@@ -32,8 +32,8 @@ public class Tile : MonoBehaviour {
 		get{ return tileRenderer.bounds.center; }
 	}
 
-	private int color;
-	private int id;
+	public int color;
+	public int id;
 
 	[HideInInspector]
 	public Renderer tileRenderer;
@@ -271,6 +271,10 @@ public class Tile : MonoBehaviour {
 		Material tempMaterial = new Material(GetComponent<Renderer>().sharedMaterial);
 		tempMaterial.color = colors[color];
 		GetComponent<Renderer>().sharedMaterial = tempMaterial;
+	}
+
+	public void setColor(Color col){
+		GetComponent<Renderer>().sharedMaterial = Orbital.MaterialCache.GetByColor(col, GetComponent<Renderer>().sharedMaterial);
 	}
 	
 	public void setTileRadius(float r){
