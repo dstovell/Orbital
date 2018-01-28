@@ -35,14 +35,14 @@ public class HexplanetEditor : Editor {
 			planet.deleteTiles();
 			//Reset the scale slider to 1 when deleting
 			planet.setWorldScale(1f);
-			EditorGUILayout.Slider ("Planet Scale", 1f, 1f, 10f);
+			EditorGUILayout.Slider ("Planet Scale", 1f, 1f, 100f);
 		}
 		EditorGUI.EndDisabledGroup ();
 
-		EditorGUI.BeginDisabledGroup (Application.isPlaying);
+		//EditorGUI.BeginDisabledGroup (Application.isPlaying);
 		//Scale slider
-		planet.setWorldScale (EditorGUILayout.Slider ("Planet Scale", planet.planetScale, 1f, 10f));
-		EditorGUI.EndDisabledGroup ();
+		planet.setWorldScale (EditorGUILayout.Slider ("Planet Scale", planet.planetScale, 1f, 100f));
+		//EditorGUI.EndDisabledGroup ();
 		//Ensure that the hexplanet's lists arent destroyed when playmode is entered
 		if (GUI.changed) {
 			EditorUtility.SetDirty(planet);  
