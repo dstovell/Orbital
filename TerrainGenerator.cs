@@ -16,6 +16,7 @@ namespace Orbital
 		public float ExtrusionMultiplier = 0.1f;
 
 		public TerrainElevation [] Elevations;
+		public TileType[] TileTypes;
 
 		public abstract bool GenerateTerrain(MeshFilter terrainMesh);
 
@@ -26,6 +27,11 @@ namespace Orbital
 			if ((this.Elevations == null) || (this.Elevations.Length == 0))
 			{
 				this.Elevations = this.GetComponents<TerrainElevation>();
+			}
+
+			if ((this.TileTypes == null) || (this.TileTypes.Length == 0))
+			{
+				this.TileTypes = this.GetComponents<TileType>();
 			}
 
 			Random.seed = this.RandomSeed;
