@@ -13,7 +13,9 @@ namespace Orbital
 		public float MinPlateExtrusion = 0.0f;
 		public float MaxPlateExtrusion = 0.6f;
 
-		public Dictionary<int, Tile> HexplanetUsedTiles;
+		public Dictionary<int, Tile> HexplanetTiles;
+
+		public HexplanetTectonicPlate[] Plates;
 
 		public override bool GenerateTerrain(MeshFilter terrainMesh)
 		{
@@ -38,29 +40,28 @@ namespace Orbital
 			float scale = (hexPlanet.detailLevel == 4) ? 2.0f : 2.8f;
 			hexPlanet.setWorldScale(scale);
 
-			HexplanetTectonicPlate[] plates = this.BuildPlates(hexPlanet);
+			this.Plates = this.BuildPlates();
 
 			return true;
 		}
 
-		public HexplanetTectonicPlate[] BuildPlates(Hexsphere hexPlanet)
+		public HexplanetTectonicPlate[] BuildPlates()
 		{
 			HexplanetTectonicPlate[] plates = new HexplanetTectonicPlate[this.PlateCount];
 
-			this.HexplanetUsedTiles = new Dictionary<int, Tile>();
+			this.HexplanetTiles = new Dictionary<int, Tile>();
 
-			Tile[] tiles = hexPlanet.gameObject.GetComponentsInChildren<Tile>();
-			Debug.Log("HexPlanet found " + tiles.Length);
+			List<Tile> tiles = this.HexPlanet.GetTiles();
 
 			for (int i=0; i<plates.Length; i++)
 			{
-				int randomIndex = Random.Range(0, tiles.Length);
+				int randomIndex = Random.Range(0, tiles.Count);
 				bool isWater = (Random.value < this.ChanceOfWaterPlate);
 				float topLayer = 0.05f;
 				float extrusion = isWater ? Random.Range(this.MinPlateExtrusion, this.SeaLevel-topLayer) : Random.Range(this.SeaLevel+topLayer, this.MaxPlateExtrusion);
 				TerrainElevation elevation = this.GetElevation(extrusion);
 				Color color = (elevation != null) ? elevation.TerrainColor : Color.black;
-				plates[i] = new HexplanetTectonicPlate(hexPlanet, tiles[randomIndex], isWater, extrusion*this.ExtrusionMultiplier, color, this.HexplanetUsedTiles);
+				plates[i] = new HexplanetTectonicPlate(this.HexPlanet, tiles[randomIndex], isWater, extrusion*this.ExtrusionMultiplier, color, this.HexplanetTiles);
 			}
 
 			int maxLoop = 100;
@@ -69,7 +70,7 @@ namespace Orbital
 				bool addedAny = false;
 				for (int j=0; j<plates.Length; j++)
 				{
-					bool added = plates[j].Fill(this.HexplanetUsedTiles, this.ChanceOfFillRequeue);
+					bool added = plates[j].Fill(this.HexplanetTiles, this.ChanceOfFillRequeue);
 					if (added)
 					{
 						addedAny = true;
@@ -83,7 +84,7 @@ namespace Orbital
 				}
 			}
 
-			Debug.Log("Stopped HexplanetUsedTiles " + this.HexplanetUsedTiles.Count + " / " + tiles.Length);
+			Debug.Log("Stopped HexplanetUsedTiles " + this.HexplanetTiles.Count + " / " + tiles.Count);
 
 			return plates;
 		}
