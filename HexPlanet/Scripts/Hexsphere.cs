@@ -52,6 +52,11 @@ public class Hexsphere : MonoBehaviour {
 	[SerializeField, HideInInspector]
 	private List<Tile> tiles;// = new List<Tile>();
 
+	public List<Tile> GetTiles() 
+	{
+		return tiles;
+	}
+
 	[HideInInspector]
 	public bool tilesGenerated;
 
