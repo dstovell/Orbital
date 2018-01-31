@@ -10,7 +10,6 @@ namespace Orbital
 		public float ChanceOfFillRequeue = 0.8f;
 		public float ChanceOfWaterPlate = 0.5f;
 
-		public float MinPlateExtrusion = 0.0f;
 		public float MaxPlateExtrusion = 0.6f;
 
 		public Dictionary<int, Tile> HexplanetTiles;
@@ -70,7 +69,7 @@ namespace Orbital
 
 				bool isWater = TerrainGenerator.EvalPercentChance(this.ChanceOfWaterPlate);
 
-				float extrusion = isWater ? Random.Range(this.MinPlateExtrusion, this.GetMaxWaterExtude()) : Random.Range(this.GetMinLandExtude(), this.MaxPlateExtrusion);
+				float extrusion = isWater ? (this.SeaLevel / 2.0f) : Random.Range(this.GetMinLandExtude(), this.MaxPlateExtrusion);
 				TerrainElevation elevation = this.GetElevation(extrusion);
 				Color color = (elevation != null) ? elevation.TerrainColor : Color.black;
 				this.Plates[i].PlateSetup(this.HexPlanet, tiles[randomIndex], isWater, extrusion*this.ExtrusionMultiplier, color, this.HexplanetTiles);
@@ -151,10 +150,20 @@ namespace Orbital
 						}
 					}
 
-					//TerrainElevation elevation = this.GetElevation(tileExtrusion);
-					//Color color = (elevation != null) ? elevation.TerrainColor : Color.black;
 					this.ExtrudeTile(tileExtrusion, tile);
-					//tile.setColor(color);
+				}
+
+
+				if (isWater)
+				{
+					for (int j=0; j<plate.EdgeTiles.Count; j++)
+					{
+						Tile edgeTile = plate.EdgeTiles[j];
+						if (plate.IsShorelineTile(edgeTile, this.SeaLevel))
+						{
+							this.ExtrudeTile(this.GetMaxWaterExtude(), edgeTile, plate);
+						}
+					}
 				}
 			}
 		}

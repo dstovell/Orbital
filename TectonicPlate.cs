@@ -186,6 +186,31 @@ namespace Orbital
 			return (angle < MaxPressureEdgeAngle);
 		}
 
+		public bool IsShorelineTile(Tile t, float seaLevel = 0.0f)
+		{
+			if (!this.isWater || !this.EdgeTiles.Contains(t))
+			{
+				return false;
+			}
+
+			for (int j=0; j<t.neighborTiles.Count; j++)
+			{
+				Tile n = t.neighborTiles[j];
+				if ((seaLevel > 0.0f) && (n.amountExtruded > seaLevel))
+				{
+					return true;
+				}
+
+				TectonicPlate otherPlate = TectonicPlate.GetTilePlate(n);
+				if ((otherPlate != null) && !otherPlate.isWater)
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
+
 		static public TectonicPlate GetTilePlate(Tile t)
 		{
 			if ((t == null) || (t.gameObject.transform.parent == null))
