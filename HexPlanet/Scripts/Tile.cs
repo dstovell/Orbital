@@ -151,6 +151,7 @@ public class Tile : MonoBehaviour {
 			mesh.vertices = verts;
 			GetComponent<MeshCollider>().sharedMesh = mesh;
 			GetComponent<MeshFilter> ().sharedMesh = mesh;
+			amountExtruded += height;
 			return;
 		}
 
