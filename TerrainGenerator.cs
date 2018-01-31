@@ -15,8 +15,8 @@ namespace Orbital
 		public float SeaLevel = 0.1f;
 		public float ExtrusionMultiplier = 0.1f;
 
-		public TerrainElevation [] Elevations;
-		public TileType[] TileTypes;
+		private TerrainElevation [] Elevations;
+		private TileType[] TileTypes;
 
 		public abstract bool GenerateTerrain(MeshFilter terrainMesh);
 
@@ -58,6 +58,11 @@ namespace Orbital
 				}
 			}
 			return null;
+		}
+
+		static public bool EvalPercentChance(float percentAsFloat)
+		{
+			return (Random.value < percentAsFloat);
 		}
 
 		void Update()

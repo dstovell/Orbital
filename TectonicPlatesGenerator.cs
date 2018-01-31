@@ -40,20 +40,24 @@ namespace Orbital
 			float scale = (hexPlanet.detailLevel == 4) ? 2.0f : 2.8f;
 			hexPlanet.setWorldScale(scale);
 
-			this.Plates = this.BuildPlates();
+			this.BuildPlates();
+
+			this.AdjustTerrainHeights();
+
+			this.AssignTerrainTypes();
 
 			return true;
 		}
 
-		public TectonicPlate[] BuildPlates()
+		public void BuildPlates()
 		{
-			TectonicPlate[] plates = new TectonicPlate[this.PlateCount];
+			this.Plates = new TectonicPlate[this.PlateCount];
 
 			this.HexplanetTiles = new Dictionary<int, Tile>();
 
 			List<Tile> tiles = this.HexPlanet.GetTiles();
 
-			for (int i=0; i<plates.Length; i++)
+			for (int i=0; i<this.Plates.Length; i++)
 			{
 				int randomIndex = Random.Range(0, tiles.Count);
 				Tile randomTile = tiles[randomIndex];
@@ -62,23 +66,23 @@ namespace Orbital
 				go.transform.position = randomTile.center;
 				go.transform.rotation = randomTile.transform.rotation;
 				go.transform.SetParent(this.HexPlanet.transform);
-				plates[i] = go.AddComponent<TectonicPlate>();
+				this.Plates[i] = go.AddComponent<TectonicPlate>();
 
-				bool isWater = (Random.value < this.ChanceOfWaterPlate);
-				float topLayer = 0.05f;
-				float extrusion = isWater ? Random.Range(this.MinPlateExtrusion, this.SeaLevel-topLayer) : Random.Range(this.SeaLevel+topLayer, this.MaxPlateExtrusion);
+				bool isWater = TerrainGenerator.EvalPercentChance(this.ChanceOfWaterPlate);
+
+				float extrusion = isWater ? Random.Range(this.MinPlateExtrusion, this.GetMaxWaterExtude()) : Random.Range(this.GetMinLandExtude(), this.MaxPlateExtrusion);
 				TerrainElevation elevation = this.GetElevation(extrusion);
 				Color color = (elevation != null) ? elevation.TerrainColor : Color.black;
-				plates[i].PlateSetup(this.HexPlanet, tiles[randomIndex], isWater, extrusion*this.ExtrusionMultiplier, color, this.HexplanetTiles);
+				this.Plates[i].PlateSetup(this.HexPlanet, tiles[randomIndex], isWater, extrusion*this.ExtrusionMultiplier, color, this.HexplanetTiles);
 			}
 
 			int maxLoop = 100;
 			for (int i=0; i<maxLoop; i++)
 			{
 				bool addedAny = false;
-				for (int j=0; j<plates.Length; j++)
+				for (int j=0; j<this.Plates.Length; j++)
 				{
-					bool added = plates[j].Fill(this.HexplanetTiles, this.ChanceOfFillRequeue);
+					bool added = this.Plates[j].Fill(this.HexplanetTiles, this.ChanceOfFillRequeue);
 					if (added)
 					{
 						addedAny = true;
@@ -92,14 +96,107 @@ namespace Orbital
 				}
 			}
 
-			for (int j=0; j<plates.Length; j++)
+			for (int j=0; j<this.Plates.Length; j++)
 			{
-				plates[j].SetupTileInfo();
+				this.Plates[j].SetupTileInfo();
 			}
 
 			Debug.Log("Stopped HexplanetUsedTiles " + this.HexplanetTiles.Count + " / " + tiles.Count);
+		}
 
-			return plates;
+		public void AdjustTerrainHeights()
+		{
+			for (int i=0; i<this.Plates.Length; i++)
+			{
+				TectonicPlate plate = this.Plates[i];
+				float extrusion = plate.extrusion;
+				bool isWater = plate.isWater;
+				for (int j=0; j<plate.PressureEdgeTiles.Count; j++)
+				{
+					Tile tile = plate.PressureEdgeTiles[j];
+					float tileExtrusion = extrusion;
+
+					for (int k=0; k<tile.neighborTiles.Count; k++)
+					{
+						Tile otherTile = tile.neighborTiles[k];
+						TectonicPlate otherPlate = TectonicPlate.GetTilePlate(otherTile);
+
+						if ((otherTile != null) && (otherPlate != null))
+						{
+							bool isOtherWater = otherPlate.isWater;
+							bool isOtherPressureTile = otherPlate.IsPressureEdgeTile(otherTile);
+							float otherExtrusion = otherPlate.extrusion;
+
+							if (isWater)
+							{
+								if (isOtherWater)
+								{
+									if (isOtherPressureTile)
+									{
+										float chanceOfOceanFaultIsland = 0.2f;
+										if (TerrainGenerator.EvalPercentChance(chanceOfOceanFaultIsland))
+										{
+											tileExtrusion = this.GetMinLandExtude(); //Mathf.Max(this.SeaLevel + tileExtrusion, this.GetMinLandExtude());
+										}
+									}
+								}
+								else
+								{
+								}
+							}
+							else 
+							{
+
+							}
+						}
+					}
+
+					//TerrainElevation elevation = this.GetElevation(tileExtrusion);
+					//Color color = (elevation != null) ? elevation.TerrainColor : Color.black;
+					this.ExtrudeTile(tileExtrusion, tile);
+					//tile.setColor(color);
+				}
+			}
+		}
+
+		public void AssignTerrainTypes()
+		{
+			for (int i=0; i<this.Plates.Length; i++)
+			{
+				TectonicPlate plate = this.Plates[i];
+				for (int j=0; j<plate.Tiles.Count; j++)
+				{
+					Tile t = plate.Tiles[j];
+					TerrainElevation elevation = this.GetElevation(t.amountExtruded);
+					Color color = (elevation != null) ? elevation.TerrainColor : Color.black;
+					t.setColor(color);
+				}
+			}
+		}
+
+		private float GetMaxWaterExtude()
+		{
+			float topLayer = 0.05f;
+			return (this.SeaLevel - topLayer);
+		}
+
+		private float GetMinLandExtude()
+		{
+			float topLayer = 0.05f;
+			return (this.SeaLevel + topLayer);
+		}
+
+		private void ExtrudeTile(float amount, Tile t, TectonicPlate parentPlate = null)
+		{
+			float clampedAmount = Mathf.Clamp(amount, 0.0f, 1.0f);
+			if (parentPlate) { 
+				clampedAmount = parentPlate.isWater ? Mathf.Clamp(amount, 0.0f, this.GetMaxWaterExtude()) : Mathf.Clamp(amount, this.GetMinLandExtude(), 1.0f);
+			}
+
+			if (clampedAmount > 0.0f)
+			{
+				t.ExtrudeAbsolute(clampedAmount);
+			}
 		}
 
 		void Start() 

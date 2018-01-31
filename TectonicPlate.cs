@@ -13,6 +13,7 @@ namespace Orbital
 		public List<Tile> Tiles;
 		public Dictionary<int, Tile> TileMap;
 		public List<Tile> EdgeTiles;
+		public List<Tile> PressureEdgeTiles;
 
 		private List<Tile> Queue;
 
@@ -22,7 +23,7 @@ namespace Orbital
 
 		public Vector2 PressureDir;
 
-		public void PlateSetup(Hexsphere hexPlanet, Tile center, bool isWater, float _extrusion, Color color, Dictionary<int, Tile> usedTiles = null)
+		public void PlateSetup(Hexsphere hexPlanet, Tile center, bool _isWater, float _extrusion, Color color, Dictionary<int, Tile> usedTiles = null)
 		{			
 			this.HexPlanet = hexPlanet;
 			this.Center = center;
@@ -30,12 +31,13 @@ namespace Orbital
 			this.Queue = new List<Tile>();
 			this.TileMap = new Dictionary<int, Tile>();
 			this.EdgeTiles = new List<Tile>();
+			this.PressureEdgeTiles = new List<Tile>();
 
-			this.isWater = (Random.value > 0.5f);
+			this.isWater = _isWater;
 			this.extrusion = _extrusion;
 
-			this.plateColor = Random.ColorHSV();
-			//this.plateColor = color;
+			//this.plateColor = Random.ColorHSV();
+			this.plateColor = color;
 		
 			this.AddTile(center, usedTiles);
 
@@ -57,9 +59,6 @@ namespace Orbital
 
 			this.Tiles.Add(t);
 			this.TileMap[t.id] = t;
-
-			t.Extrude(this.extrusion);
-			t.setColor(this.plateColor);
 
 			t.transform.SetParent(this.transform);
 
@@ -95,7 +94,7 @@ namespace Orbital
 			for (int i=0; i<q.Count; i++)
 			{
 				Tile t = q[i];
-				bool requeue = (Random.value < chanceOfFillRequeue);
+				bool requeue = TerrainGenerator.EvalPercentChance(chanceOfFillRequeue);
 				if (requeue)
 				{
 					tilesAdded = true;
@@ -120,6 +119,7 @@ namespace Orbital
 			for (int i=0; i<this.Tiles.Count; i++)
 			{
 				Tile t = this.Tiles[i];
+				bool isPressureTile = false;
 				int edgeCount = this.GetTileEdgeCount(t);
 				if (edgeCount > 0)
 				{
@@ -127,11 +127,15 @@ namespace Orbital
 
 					if (this.IsPressureEdgeTile(t))
 					{
-						//Color c = this.plateColor;
-						//c.r = 1f;
-						//t.setColor(c);
+						this.PressureEdgeTiles.Add(t);
 						t.gameObject.name = "PressureEdge";
+						isPressureTile = true;
 					}
+				}
+
+				if (!isPressureTile)
+				{
+					t.ExtrudeAbsolute(this.extrusion);
 				}
 			}
 		}
@@ -178,7 +182,18 @@ namespace Orbital
 
 			float angle = Vector3.Angle(directionFromCenter, pressureVector);
 
-			return (angle < 45);
+			float MaxPressureEdgeAngle = 45.0f;
+			return (angle < MaxPressureEdgeAngle);
+		}
+
+		static public TectonicPlate GetTilePlate(Tile t)
+		{
+			if ((t == null) || (t.gameObject.transform.parent == null))
+			{
+				return null;
+			}
+
+			return t.gameObject.transform.parent.gameObject.GetComponent<TectonicPlate>();
 		}
 	}
 
