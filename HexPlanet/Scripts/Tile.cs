@@ -50,6 +50,8 @@ public class Tile : MonoBehaviour {
 	private bool hasBeenExtruded;
 	public bool isHexagon;
 
+	public float amountExtruded = 0.0f;
+
 	void Awake(){
 		tileRenderer = GetComponent<Renderer> ();
 	}
@@ -114,6 +116,14 @@ public class Tile : MonoBehaviour {
 	public void placeObject(GameObject obj){
 		obj.transform.position = center;
 		obj.transform.up = transform.up;
+	}
+
+	public void ExtrudeAbsolute(float height) {
+		float deltaHeight = height - this.amountExtruded;
+		if (deltaHeight != 0.0f)
+		{
+			Extrude(deltaHeight);
+		}
 	}
 
 	public void Extrude(float height){
@@ -218,6 +228,7 @@ public class Tile : MonoBehaviour {
 		GetComponent<MeshCollider>().sharedMesh = mesh;
 		GetComponent<MeshFilter> ().sharedMesh = mesh;
 		hasBeenExtruded = true;
+		amountExtruded += height;
 		//Assign Tile Material
 		GetComponent<Renderer>().sharedMaterial = isHexagon ? parentPlanet.hexMat_extruded : parentPlanet.pentMat_extruded;
 
